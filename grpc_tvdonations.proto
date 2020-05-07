@@ -1,0 +1,95 @@
+syntax="proto3";
+
+option java_multiple_files = true;
+option java_package = "proto.services";
+
+message Volunteer{
+    int32 id=1;
+    string user=2; 
+    string password=3;
+}
+
+message Donor{
+    int32 id=1;
+    string name=2;
+    string address=3;
+    string phoneNumber=4;
+}
+
+message Case {
+    int32 id=1;
+    string name=2;
+    double totalSumDonated=3;
+}
+
+message Empty {}
+
+message Substring {
+    string substring = 1;
+}
+
+message Donation {
+    int32 did=1;
+    int32 cid=2;
+    double sumDonated=3;
+}
+
+message Request {
+    enum Type {
+        Unknown=0; 
+        Login = 1; 
+        Logout = 2; 
+        GetAllCases = 3; 
+        GetAllDonors = 4; 
+        GetAllDonorsBySubstring = 5;
+        AddDonation = 6;
+        AddDonor = 7;
+        Update = 8;
+    }
+    
+    Type type = 1;
+    
+    Volunteer volunteer = 2;
+    string substring = 3;
+    string name = 4;
+    string address = 5;
+    string phoneNumber = 6;
+    int32 did = 7;
+    int32 cid = 8;
+    double sum = 9;
+}
+
+message Response {
+    enum Type {
+        Unknown=0; 
+        Ok = 1; 
+        Error = 2;
+        GetAllCases = 3;
+        GetAllDonors = 4;
+        GetAllDonorsBySubstring = 5;
+        AddDonation = 6;
+        AddDonor = 7;
+        Update = 8;
+    }
+    
+    Type type = 1;
+    
+    string message = 2;
+    repeated Case cases = 3;
+    repeated Donor donors = 4;
+    int32 did = 5;  
+}
+
+service IServices {
+    rpc findVolunteer(Volunteer) returns (Response) {}
+    rpc logout(Volunteer) returns (Response) {}
+    rpc addDonor(Donor) returns (Response) {}
+    rpc addDonation(Donation) returns (Response) {}
+    rpc findAllDonors(Empty) returns (Response) {}
+    rpc findAllCases(Empty) returns (Response) {}
+    rpc findAllDonorsBySubstring(Substring) returns (Response) {}
+}
+
+service IObserver {
+    rpc updateDonationAdded(stream Donation) returns (stream Response) {}
+}
